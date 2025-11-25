@@ -1,0 +1,19 @@
+FROM gradle:8.14-jdk21 as dev
+
+WORKDIR /app
+
+# Cache de dependencias de Gradle
+VOLUME /home/gradle/.gradle
+
+# Copiamos solo los archivos de configuración primero (para optimizar cache)
+COPY build.gradle settings.gradle ./
+
+# Descarga dependencias (se cachean)
+RUN gradle dependencies --no-daemon || true
+
+# Ahora si, montamos el código al vuelo con volumen en docker-compose
+COPY . .
+
+EXPOSE 8080
+
+ENTRYPOINT ["gradle", "bootRun", "--no-daemon"]
