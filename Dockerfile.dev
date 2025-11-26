@@ -1,19 +1,18 @@
-FROM gradle:8.14-jdk21 as dev
+FROM maven:3.9-eclipse-temurin-21 AS dev
 
 WORKDIR /app
 
-# Cache de dependencias de Gradle
-VOLUME /home/gradle/.gradle
+# Copiamos el pom para cachear dependencias
+COPY pom.xml .
 
-# Copiamos solo los archivos de configuración primero (para optimizar cache)
-COPY build.gradle settings.gradle ./
+# Descarga dependencias (cache)
+RUN mvn dependency:go-offline -B
 
-# Descarga dependencias (se cachean)
-RUN gradle dependencies --no-daemon || true
+# El código se montará con volumes, pero dejamos esto para evitar errores
+COPY src ./src
 
-# Ahora si, montamos el código al vuelo con volumen en docker-compose
-COPY . .
+EXPOSE 8081
 
-EXPOSE 8080
+ENV SPRING_PROFILES_ACTIVE=dev
 
-ENTRYPOINT ["gradle", "bootRun", "--no-daemon"]
+CMD ["mvn", "spring-boot:run"]

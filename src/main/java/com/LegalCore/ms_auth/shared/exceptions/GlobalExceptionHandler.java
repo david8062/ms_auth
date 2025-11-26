@@ -106,6 +106,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), request.getRequestURI());
     }
+    @ExceptionHandler(GenericEntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleGenericEntityNotFound(GenericEntityNotFoundException ex,
+                                                                     HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
     
 
 }

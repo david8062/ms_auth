@@ -1,0 +1,3 @@
+ALTER TABLE users
+ADD COLUMN username VARCHAR(100),
+ADD COLUMN status VARCHAR(10);
